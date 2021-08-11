@@ -1,0 +1,22 @@
+#Команды для инициализации OpenVPN и создания сертификата сервера.
+#Замените {vpn_server_address} на адрес вашего сервера.
+
+docker-compose run --rm openvpn ovpn_genconfig -u udp://{vpn_server_address}
+
+docker-compose run --rm openvpn ovpn_initpki
+
+#Во время генерации сертификата введите контрольную фразу (Enter PEM pass phrase)
+#и имя сертификата (Common Name). 
+
+#Запускаем OpenVPN сервер
+
+docker-compose up -d openvpn
+
+#Создание клиентских сертификатов
+#Заменить {client_name} на имя клиента
+
+docker-compose run --rm openvpn easyrsa build-client-full {client_name} nopass
+
+#Экспорт сертификата в .ovpn файл
+
+docker-compose run --rm openvpn ovpn_getclient {client_name} > certificate.ovpn
